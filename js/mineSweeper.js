@@ -40,6 +40,7 @@
 				// フィールド関連
 				this.cols = fieldOption.cols;
 				this.rows = fieldOption.rows;
+				this.numCells = this.cols * this.rows;
 				this.numMines = fieldOption.numMines;
 
 				// クリアに関わるもの
@@ -55,18 +56,41 @@
 				// フィールドの見出し追加
 				$("#field").append("<tr id='thead'></tr>");
 				$("#thead").append("<th>#</th>");				// 一番左の空白
-				for(var row = 0; row < this.rows; row++) {
-					$("#thead").append("<th>"+row+"</th>");	
+				for(var col = 0; col < this.cols; col++) {
+					$("#thead").append("<th>"+col+"</th>");	
 				}
 
 				// フィールドの行追加
-				for(var col = 0; col < this.cols; col++) {
-					$("#field").append("<tr id='tr"+col+"'></tr>");
-					$("#tr"+col).append("<td>"+col+"</td>");
-					for(var row = 0; row < this.rows; row++) {
-						$("#tr"+col).append("<td class='blank' id='cell_"+col+"_"+row+"'><img src='"+cellImage.blank+"'></td>");
+				for(var row = 0; row < this.cols; row++) {
+					$("#field").append("<tr id='tr"+row+"'></tr>");
+					$("#tr"+row).append("<td>"+row+"</td>");
+					for(var col = 0; col < this.cols; col++) {
+						$("#tr"+row).append("<td class='blank' id='cell_"+row+"_"+col+"'><img src='"+cellImage.blank+"'></td>");
 					}
-				}	
+				}
+
+				// 地雷をセット
+				this.setMines();	
+			},
+
+			setMines: function() {
+				console.log('called setMines');
+				for(var i = 0; i < this.numMines; i++) {
+					
+					var val = Math.floor(Math.random() * this.numCells);
+					var row_id = Math.floor(val / this.rows);
+					var col_id = val % this.rows;
+					var cell_id = "#cell_" + row_id + "_" + col_id;
+					
+					if($(cell_id).hasClass('mine')) {
+						i--;
+						continue;
+					} else {
+						$(cell_id).addClass('mine');
+						console.log(cell_id);
+					}
+
+				}
 			},
 
 		}
