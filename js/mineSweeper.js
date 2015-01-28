@@ -87,11 +87,92 @@
 						continue;
 					} else {
 						$(cell_id).addClass('mine');
-						console.log(cell_id);
 					}
 
 				}
 			},
+
+			openCell: function(cell) {
+				console.log("called openCell");
+
+				if(this.checkMine(cell)) {
+					cell.html("<img src='"+cellImage.mine+"'>");
+					// game over
+					this.endGame(false);
+				} else {
+					cell.html("<img src='"+this.checkAroundMine(cell)+"'>");
+					cell.removeClass("blank");
+	
+					if(--this.leftCells == 0) {
+						this.endGame(true);
+					}
+				}
+			},
+
+			checkCell: function(cell) {
+				console.log("called checkCell");
+				
+				cell.html("<img src='"+cellImage.checked+"'>");
+				cell.removeClass("blank")
+					.addClass("checked");
+
+				if(this.checkMine(cell)) {
+					if(--this.leftMines == 0) {
+						this.endGame(true);
+					}
+
+				}
+
+			},
+
+			checkMine: function(cell) {
+				return cell.hasClass('mine');
+			},
+
+			checkAroundMine: function(cell) {
+				var splitId = cell.attr("id").split('_');
+				var row_id = parseInt(splitId[1]);
+				var col_id = parseInt(splitId[2]);
+
+				var mineCount = 0;	// 周りの地雷の総数
+
+
+				// 周り8マス+自分1マス（余計）を探索
+				for(var i = row_id - 1; i < row_id + 2; i++) {
+					
+					// 指定されたフィールドからはみ出したらcontinue
+					if(i < 0 || i > this.rows) {
+						continue;
+					}
+
+					for(var j = col_id - 1; j < col_id + 2; j++) {
+
+						// 指定されたフィールドからはみ出したらcontinue
+						if(j < 0 || j > this.cols) {
+							continue;
+						}
+
+						// mine クラス持ちなら地雷の総数をインクリメント
+						var cell_id = "#cell_" + i + "_" + j;
+						if($(cell_id).hasClass('mine')) {
+							mineCount++;
+						}
+					}
+				}
+				
+				return eval("cellImage.opened_"+mineCount);
+			},
+
+			endGame: function(flag) {
+				if(flag) {
+					alert("おめでとー！");
+				} else {
+					alert("どんまい！");
+				}
+
+				$(document).off("click", ".blank");
+				$(document).off("contextmenu", ".blank");
+			}
 
 		}
 
@@ -104,7 +185,18 @@
 
 	$(function() {
 
+		// ゲームの準備
 		mineSweeper.game.init();
+
+		// マスをクリックした際のイベント追加
+		$(document).on("click", ".blank", function() {
+			mineSweeper.game.openCell($(this));
+		});
+
+		$(document).on("contextmenu", ".blank", function() {
+			mineSweeper.game.checkCell($(this));
+			return false;
+		});
 
 	});
 
