@@ -46,6 +46,7 @@
 				// クリアに関わるもの
 				this.leftCells = this.cols * this.rows - this.numMines;	// 残りのマス 地雷以外
 				this.leftMines = this.numMines;							// 残りの地雷
+				this.numChecks = 0;
 
 				this.createField();
 			},
@@ -87,6 +88,7 @@
 						continue;
 					} else {
 						$(cell_id).addClass('mine');
+						console.log(cell_id);
 					}
 
 				}
@@ -116,13 +118,29 @@
 				cell.removeClass("blank")
 					.addClass("checked");
 
+				this.numChecks++;
+
 				if(this.checkMine(cell)) {
-					if(--this.leftMines == 0) {
+					if(--this.leftMines == 0 && this.numChecks == this.numMines) {
 						this.endGame(true);
 					}
 
 				}
 
+			},
+
+			uncheckCell: function(cell) {
+				console.log("called uncheckCell");
+
+				cell.html("<img src='"+cellImage.blank+"'>");
+				cell.removeClass("checked")
+					.addClass("blank");
+
+				this.numChecks--;
+
+				if(this.checkMine(cell)) {
+					this.leftMines++;
+				}
 			},
 
 			checkMine: function(cell) {
@@ -172,6 +190,7 @@
 
 				$(document).off("click", ".blank");
 				$(document).off("contextmenu", ".blank");
+				$(document).off("contextmenu", ".checked");
 			}
 
 		}
@@ -195,6 +214,11 @@
 
 		$(document).on("contextmenu", ".blank", function() {
 			mineSweeper.game.checkCell($(this));
+			return false;
+		});
+
+		$(document).on("contextmenu", ".checked", function() {
+			mineSweeper.game.uncheckCell($(this));
 			return false;
 		});
 
