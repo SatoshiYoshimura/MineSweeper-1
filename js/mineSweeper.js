@@ -33,26 +33,44 @@
 			init: function() {
 				console.log('called init');
 
+				// マスをクリックした際のイベント追加
+				$(document).on("click", ".blank", function() {
+					mineSweeper.game.openCell($(this));
+				});
+
+				$(document).on("contextmenu", ".blank", function() {
+					mineSweeper.game.checkCell($(this));
+					return false;
+				});
+
+				$(document).on("contextmenu", ".checked", function() {
+					mineSweeper.game.uncheckCell($(this));
+					return false;
+				});
+
 				// 各変数の初期化
 
 				// TODO: colとrow は LEVEL3からユーザが定義できるので初期化の時に変えられるように
 
 				// フィールド関連
-				this.cols = fieldOption.cols;
-				this.rows = fieldOption.rows;
+				this.cols = parseInt($("#customCol").val());
+				this.rows = parseInt($("#customRow").val());
 				this.numCells = this.cols * this.rows;
-				this.numMines = fieldOption.numMines;
+				this.numMines = parseInt($("#customMine").val());
 
 				// クリアに関わるもの
 				this.leftCells = this.cols * this.rows - this.numMines;	// 残りのマス 地雷以外
 				this.leftMines = this.numMines;							// 残りの地雷
-				this.numChecks = 0;
+				this.numChecks = 0;	
 
 				this.createField();
 			},
 
 			createField: function() {
 				console.log('called createField');
+
+				// テーブル初期化
+				$("#field").empty();
 
 				// フィールドの見出し追加
 				$("#field").append("<tr id='thead'></tr>");
@@ -62,7 +80,7 @@
 				}
 
 				// フィールドの行追加
-				for(var row = 0; row < this.cols; row++) {
+				for(var row = 0; row < this.rows; row++) {
 					$("#field").append("<tr id='tr"+row+"'></tr>");
 					$("#tr"+row).append("<td>"+row+"</td>");
 					for(var col = 0; col < this.cols; col++) {
@@ -79,8 +97,8 @@
 				for(var i = 0; i < this.numMines; i++) {
 					
 					var val = Math.floor(Math.random() * this.numCells);
-					var row_id = Math.floor(val / this.rows);
-					var col_id = val % this.rows;
+					var row_id = Math.floor(val / this.cols);
+					var col_id = val % this.cols;
 					var cell_id = "#cell_" + row_id + "_" + col_id;
 					
 					if($(cell_id).hasClass('mine')) {
@@ -191,7 +209,21 @@
 				$(document).off("click", ".blank");
 				$(document).off("contextmenu", ".blank");
 				$(document).off("contextmenu", ".checked");
-			}
+			},
+
+			customSelectMineList: function() {
+				var customCol = parseInt($("#customCol").val());
+				var customRow = parseInt($("#customRow").val());
+
+				var customMineNum = customCol * customRow;
+
+				$("#customMine").empty();
+
+				for(var i = 0; i < customMineNum; i++) {
+					$("#customMine").append("<option value='"+i+"'>"+i+"</option>");
+				}
+
+			},
 
 		}
 
@@ -205,21 +237,18 @@
 	$(function() {
 
 		// ゲームの準備
-		mineSweeper.game.init();
+		//mineSweeper.game.init();
 
-		// マスをクリックした際のイベント追加
-		$(document).on("click", ".blank", function() {
-			mineSweeper.game.openCell($(this));
+		$(document).on("change", "#customCol", function() {
+			mineSweeper.game.customSelectMineList();
 		});
 
-		$(document).on("contextmenu", ".blank", function() {
-			mineSweeper.game.checkCell($(this));
-			return false;
+		$(document).on("change", "#customRow", function() {
+			mineSweeper.game.customSelectMineList();
 		});
 
-		$(document).on("contextmenu", ".checked", function() {
-			mineSweeper.game.uncheckCell($(this));
-			return false;
+		$(document).on("click", "#start", function() {
+			mineSweeper.game.init();
 		});
 
 	});

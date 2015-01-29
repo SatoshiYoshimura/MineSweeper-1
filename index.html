@@ -6,11 +6,59 @@
 </head>
 <body>
 
-<table id='field'>
+
+<span> 列 : </span>
+
+<select id='customCol' name='col'>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5" selected>5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+	<option value="10">10</option>
+</select>
+
+<span> 行 : </span>
+
+<select id='customRow' name='row'>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5" selected>5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+	<option value="10">10</option>
+</select>
+
+<span> 地雷の数 : </span>
+
+<select id='customMine' name='mine'>
+	<option value="0">0</option>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5" selected>5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+	<option value="10">10</option>
+</select>
+
+<button id="start">Start!</button>
 
 
 
-</table>	
+
+<table id='field'></table>	
 
 <script src='./js/jquery.js'></script>
 <script src='./js/mineSweeper.js'></script>
