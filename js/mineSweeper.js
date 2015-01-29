@@ -105,12 +105,7 @@
 					// game over
 					this.endGame(false);
 				} else {
-					cell.html("<img src='"+this.checkAroundMine(cell)+"'>");
-					cell.removeClass("blank");
-	
-					if(--this.leftCells == 0) {
-						this.endGame(true);
-					}
+					this.checkAroundMine(cell);
 				}
 			},
 
@@ -136,6 +131,7 @@
 			},
 
 			checkAroundMine: function(cell) {
+				console.dir(cell);
 				var splitId = cell.attr("id").split('_');
 				var row_id = parseInt(splitId[1]);
 				var col_id = parseInt(splitId[2]);
@@ -165,8 +161,53 @@
 						}
 					}
 				}
+
+				cell.html("<img src='"+eval("cellImage.opened_"+mineCount)+"'>");
+				cell.removeClass("blank");
+
+				if(--this.leftCells == 0) {
+					this.endGame(true);
+				}
 				
-				return eval("cellImage.opened_"+mineCount);
+				console.log("minecount: "+mineCount);
+
+
+				// 再帰による探索
+				// TODO: 要リファクタ，ゴミコード
+				if(mineCount == 0) {
+					console.log("loop");
+					// 周り8マス+自分1マス（余計）を探索
+					for(var i = row_id - 1; i < row_id + 2; i++) {
+						
+						// 指定されたフィールドからはみ出したらcontinue
+						if(i < 0 || i > this.rows) {
+							continue;
+						}
+
+						for(var j = col_id - 1; j < col_id + 2; j++) {
+
+							// 指定されたフィールドからはみ出したらcontinue
+							if(j < 0 || j > this.cols) {
+								continue;
+							}
+
+							// mine クラス持ちなら地雷の総数をインクリメント
+							var cell_id = "#cell_" + i + "_" + j;
+							if($(cell_id).hasClass('mine') == true || $(cell_id).hasClass('blank') == false) {
+								
+							} else {
+								console.log(cell_id);
+								this.checkAroundMine($(cell_id));
+							}
+						}
+					}
+				} else {
+					return;
+				}
+				// --
+				
+				
+				
 			},
 
 			endGame: function(flag) {
