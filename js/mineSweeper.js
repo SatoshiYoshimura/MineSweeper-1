@@ -39,8 +39,6 @@
 
 				// 各変数の初期化
 
-				// TODO: colとrow は LEVEL3からユーザが定義できるので初期化の時に変えられるように
-
 				// フィールド関連
 				this.cols = parseInt($("#customCol").val());
 				this.rows = parseInt($("#customRow").val());
@@ -49,8 +47,6 @@
 
 				// クリアに関わるもの
 				this.leftCells = this.cols * this.rows - this.numMines;	// 残りのマス 地雷以外
-				this.leftMines = this.numMines;							// 残りの地雷
-				this.numChecks = 0;	
 
 				this.createField();
 			},
@@ -125,15 +121,6 @@
 				cell.removeClass("blank")
 					.addClass("checked");
 
-				this.numChecks++;
-
-				if(this.checkMine(cell)) {
-					if(--this.leftMines == 0 && this.numChecks == this.numMines) {
-						this.endGame(true);
-					}
-
-				}
-
 			},
 
 			uncheckCell: function(cell) {
@@ -142,12 +129,6 @@
 				cell.html("<img src='"+cellImage.blank+"'>");
 				cell.removeClass("checked")
 					.addClass("blank");
-
-				this.numChecks--;
-
-				if(this.checkMine(cell)) {
-					this.leftMines++;
-				}
 			},
 
 			checkMine: function(cell) {
