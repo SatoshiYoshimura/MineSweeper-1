@@ -33,20 +33,9 @@
 			init: function() {
 				console.log('called init');
 
-				// マスをクリックした際のイベント追加
-				$(document).on("click", ".blank", function() {
-					mineSweeper.game.openCell($(this));
-				});
-
-				$(document).on("contextmenu", ".blank", function() {
-					mineSweeper.game.checkCell($(this));
-					return false;
-				});
-
-				$(document).on("contextmenu", ".checked", function() {
-					mineSweeper.game.uncheckCell($(this));
-					return false;
-				});
+				// マスのイベントの初期化
+				this.clearCellEvent();
+				this.setCellEvent();
 
 				// 各変数の初期化
 
@@ -206,9 +195,7 @@
 					alert("どんまい！");
 				}
 
-				$(document).off("click", ".blank");
-				$(document).off("contextmenu", ".blank");
-				$(document).off("contextmenu", ".checked");
+				this.clearCellEvent();
 			},
 
 			customSelectMineList: function() {
@@ -223,6 +210,32 @@
 					$("#customMine").append("<option value='"+i+"'>"+i+"</option>");
 				}
 
+			},
+
+			clearCellEvent: function() {
+				// マスをクリックした際のイベント削除
+				$(document).off("click", ".blank");
+
+				$(document).off("contextmenu", ".blank");
+
+				$(document).off("contextmenu", ".checked");
+			},
+
+			setCellEvent: function() {
+				// マスをクリックした際のイベント追加
+				$(document).on("click", ".blank", function() {
+					mineSweeper.game.openCell($(this));
+				});
+
+				$(document).on("contextmenu", ".blank", function() {
+					mineSweeper.game.checkCell($(this));
+					return false;
+				});
+
+				$(document).on("contextmenu", ".checked", function() {
+					mineSweeper.game.uncheckCell($(this));
+					return false;
+				});
 			},
 
 		}
