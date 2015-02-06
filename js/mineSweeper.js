@@ -40,10 +40,10 @@
 				// 各変数の初期化
 
 				// フィールド関連
-				this.cols = parseInt($("#customCol").val());
-				this.rows = parseInt($("#customRow").val());
+				this.cols = parseInt($("#customCol").val(), 10);
+				this.rows = parseInt($("#customRow").val(), 10);
 				this.numCells = this.cols * this.rows;
-				this.numMines = parseInt($("#customMine").val());
+				this.numMines = parseInt($("#customMine").val(), 10);
 
 				// クリアに関わるもの
 				this.leftCells = this.cols * this.rows - this.numMines;	// 残りのマス 地雷以外
@@ -133,8 +133,8 @@
 			checkAroundMine: function(cell) {
 				console.dir(cell);
 				var splitId = cell.attr("id").split('_');
-				var row_id = parseInt(splitId[1]);
-				var col_id = parseInt(splitId[2]);
+				var row_id = parseInt(splitId[1], 10);
+				var col_id = parseInt(splitId[2], 10);
 
 				var mineCount = 0;	// 周りの地雷の総数
 
@@ -142,30 +142,32 @@
 				// 周り8マス+自分1マス（余計）を探索
 				for(var i = row_id - 1; i < row_id + 2; i++) {
 					
-					// 指定されたフィールドからはみ出したらcontinue
-					if(i < 0 || i > this.rows) {
-						continue;
-					}
+					// 指定されたフィールド行内なら実行
+					if(i > 0 || i <= this.rows) {
+						
+						for(var j = col_id - 1; j < col_id + 2; j++) {
 
-					for(var j = col_id - 1; j < col_id + 2; j++) {
+							// 指定されたフィールド列なら実行
+							if(j > 0 || j <= this.cols) {
+								
+								// mine クラス持ちなら地雷の総数をインクリメント
+								var cell_id = "#cell_" + i + "_" + j;
+								if($(cell_id).hasClass('mine')) {
+									mineCount++;
+								}
 
-						// 指定されたフィールドからはみ出したらcontinue
-						if(j < 0 || j > this.cols) {
-							continue;
+							}
 						}
 
-						// mine クラス持ちなら地雷の総数をインクリメント
-						var cell_id = "#cell_" + i + "_" + j;
-						if($(cell_id).hasClass('mine')) {
-							mineCount++;
-						}
 					}
 				}
+				// 探索終わり
 
+				// マスを開ける
 				cell.html("<img src='"+eval("cellImage.opened_"+mineCount)+"'>");
 				cell.removeClass("blank");
 
-				if(--this.leftCells == 0) {
+				if(--this.leftCells === 0) {
 					this.endGame(true);
 				}
 				
@@ -173,31 +175,26 @@
 
 
 				// 再帰による探索
-				// TODO: 要リファクタ，ゴミコード
-				if(mineCount == 0) {
+				if(mineCount === 0) {
 					console.log("loop");
 					// 周り8マス+自分1マス（余計）を探索
 					for(var i = row_id - 1; i < row_id + 2; i++) {
 						
-						// 指定されたフィールドからはみ出したらcontinue
-						if(i < 0 || i > this.rows) {
-							continue;
-						}
+						// 指定されたフィールド行内なら実行
+						if(i > 0 || i <= this.rows) {
 
-						for(var j = col_id - 1; j < col_id + 2; j++) {
+							for(var j = col_id - 1; j < col_id + 2; j++) {
 
-							// 指定されたフィールドからはみ出したらcontinue
-							if(j < 0 || j > this.cols) {
-								continue;
-							}
-
-							// mine クラス持ちなら地雷の総数をインクリメント
-							var cell_id = "#cell_" + i + "_" + j;
-							if($(cell_id).hasClass('mine') == true || $(cell_id).hasClass('blank') == false) {
-								
-							} else {
-								console.log(cell_id);
-								this.checkAroundMine($(cell_id));
+								// 指定されたフィールド列なら実行
+								if(j > 0 || j <= this.cols) {
+									
+									// 指定したマスに地雷がなくまだオープンされていなければ再帰
+									var cell_id = "#cell_" + i + "_" + j;
+									if($(cell_id).hasClass('mine') === false && $(cell_id).hasClass('blank') === true) {
+										console.log(cell_id);
+										this.checkAroundMine($(cell_id));
+									}
+								}
 							}
 						}
 					}
@@ -205,8 +202,6 @@
 					return;
 				}
 				// --
-				
-				
 				
 			},
 
